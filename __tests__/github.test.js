@@ -2,6 +2,7 @@ const pool = require('../lib/utils/pool');
 const setup = require('../data/setup');
 const request = require('supertest');
 const app = require('../lib/app');
+const GithubUser = require('../lib/models/GithubUser');
 
 jest.mock('../lib/utils/github');
 
@@ -35,6 +36,20 @@ describe('backend-gitty routes', () => {
       avatar: expect.any(String),
       iat: expect.any(Number),
       exp: expect.any(Number),
+    });
+  });
+
+  it.only('DELETE route logs out user', async () => {
+    const agent = request.agent(app);
+    await GithubUser.insert({
+      username: 'test_user',
+      photoUrl: 'http://image.com/image.png',
+    });
+    const res = await agent.delete('/api/v1/github/sessions');
+
+    expect(res.body).toEqual({
+      success: true,
+      message: 'Signed out successfully!',
     });
   });
 });
