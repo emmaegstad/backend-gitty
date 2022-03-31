@@ -32,11 +32,13 @@ describe('backend-gitty routes', () => {
 
     return request(app)
       .post('/api/v1/posts')
-      .send({ text: 'Hello this is some text' })
+      .send({
+        text: 'Wow, this is a fantastic post.',
+      })
       .then((res) => {
         expect(res.body).toEqual({
           id: '2',
-          text: 'Hello this is some text',
+          text: 'Wow, this is a fantastic post.',
           username: 'test_user',
         });
       });
