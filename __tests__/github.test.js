@@ -39,7 +39,7 @@ describe('backend-gitty routes', () => {
     });
   });
 
-  it.only('DELETE route logs out user', async () => {
+  it('DELETE route logs out user', async () => {
     const agent = request.agent(app);
     await GithubUser.insert({
       username: 'test_user',

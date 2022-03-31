@@ -35,10 +35,27 @@ describe('backend-gitty routes', () => {
       .send({ text: 'Hello this is some text' })
       .then((res) => {
         expect(res.body).toEqual({
-          id: '1',
+          id: '2',
           text: 'Hello this is some text',
           username: 'test_user',
         });
       });
+  });
+
+  it('should get all posts if a user is signed in', async () => {
+    const agent = request.agent(app);
+    await GithubUser.insert({
+      username: 'test_user',
+      photoUrl: 'http://image.com/image.png',
+    });
+    const expected = [
+      {
+        text: 'This is a post!',
+      },
+    ];
+
+    const res = await agent.get('/api/v1/posts');
+
+    expect(res.body).toEqual(expected);
   });
 });
