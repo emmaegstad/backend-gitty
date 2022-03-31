@@ -33,7 +33,6 @@
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
-    "cook": "^0.0.1",
     "cookie-parser": "^1.4.6",
     "cross-env": "^7.0.3",
     "cross-fetch": "^3.1.5",
