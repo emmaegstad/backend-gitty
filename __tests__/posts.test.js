@@ -30,18 +30,11 @@ describe('backend-gitty routes', () => {
     expect(res.body).toEqual(expected);
   });
 
-  it('should get all posts if a user is signed in', async () => {
+  it('gets all posts if user is signed in (GET)', async () => {
     const agent = request.agent(app);
-    await GithubUser.insert({
-      username: 'test_user',
-      photoUrl: 'http://image.com/image.png',
-    });
-    const expected = [
-      {
-        text: 'This is a post!',
-      },
-    ];
+    await agent.get('/api/v1/github/login/callback?code=42').redirects(1);
 
+    const expected = [{ text: 'This is a post!' }];
     const res = await agent.get('/api/v1/posts');
 
     expect(res.body).toEqual(expected);
