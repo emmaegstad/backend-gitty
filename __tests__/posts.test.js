@@ -3,17 +3,7 @@ const setup = require('../data/setup');
 const request = require('supertest');
 const app = require('../lib/app');
 const GithubUser = require('../lib/models/GithubUser');
-
-jest.mock('../lib/middleware/authenticate.js', () => {
-  return (req, res, next) => {
-    req.user = {
-      username: 'test_user',
-      photoUrl: 'http://image.com/image.png',
-    };
-
-    next();
-  };
-});
+jest.mock('../lib/utils/github');
 
 describe('backend-gitty routes', () => {
   beforeEach(() => {
@@ -24,24 +14,20 @@ describe('backend-gitty routes', () => {
     pool.end();
   });
 
-  it('creates a post when a user is logged in', async () => {
-    await GithubUser.insert({
-      username: 'test_user',
-      photoUrl: 'http://image.com/image.png',
-    });
+  it('creates a post when a user is logged in (POST)', async () => {
+    const agent = request.agent(app);
+    const expected = {
+      id: expect.any(String),
+      text: 'example',
+      username: 'fake_github_user',
+    };
+    let res = await agent.post('/api/v1/posts').send(expected);
+    expect(res.status).toEqual(401);
 
-    return request(app)
-      .post('/api/v1/posts')
-      .send({
-        text: 'Wow, this is a fantastic post.',
-      })
-      .then((res) => {
-        expect(res.body).toEqual({
-          id: '2',
-          text: 'Wow, this is a fantastic post.',
-          username: 'test_user',
-        });
-      });
+    await agent.get('/api/v1/github/login/callback?code=42').redirects(1);
+
+    res = await agent.post('/api/v1/posts').send(expected);
+    expect(res.body).toEqual(expected);
   });
 
   it('should get all posts if a user is signed in', async () => {
