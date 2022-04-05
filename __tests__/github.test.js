@@ -34,10 +34,6 @@ describe('backend-gitty routes', () => {
 
   it('DELETE route logs out user', async () => {
     const agent = request.agent(app);
-    await GithubUser.insert({
-      username: 'test_user',
-      photoUrl: 'http://image.com/image.png',
-    });
     const res = await agent.delete('/api/v1/github/sessions');
 
     expect(res.body).toEqual({
